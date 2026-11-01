@@ -107,4 +107,4 @@ docker run --rm -p 8000:8000 open-text-semantics:latest
 
 ## License
 
-Add an organization-approved license before production distribution. Complete security, privacy, and model-quality reviews before processing sensitive data.
+This project is licensed under the [MIT License](LICENSE).
