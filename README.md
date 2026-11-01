@@ -1,48 +1,53 @@
-# 开放文本语义理解与分析平台
+<p align="center">
+  <a href="README.md"><strong>English</strong></a> ·
+  <a href="README.zh-CN.md">简体中文</a>
+</p>
 
-面向企业级文本资产的语义理解、需求洞察与主题发现平台原型。系统以统一 API 作为能力出口，围绕“文本接入—语义解析—结构化理解—主题发现—业务应用”构建可扩展的服务骨架，适用于客服工单、用户反馈、舆情信息、产品需求、知识库文档和运营内容等开放文本场景。
+# Open Text Semantic Understanding & Analysis Platform
 
-本仓库提供后端服务原型，不包含轻量网页演示页面。服务启动后通过 OpenAPI 文档、内部服务调用或数据管道接入。
+An enterprise-oriented platform prototype for semantic understanding, demand intelligence, and topic discovery over open-domain text. It provides a versioned API layer for customer tickets, user feedback, public opinion, product requirements, knowledge documents, and operational content.
 
-## 核心能力
+This repository contains a backend service prototype. It does not include a lightweight web demo. The service is designed to be integrated through OpenAPI, internal service calls, or data pipelines.
 
-- **统一语义分析接口**：语言识别、情感倾向、关键词权重、文本统计和实体结果统一输出。
-- **批量文本处理**：支持批量提交，便于接入工单流、离线数据集和数据仓库任务。
-- **需求主题发现**：从文本集合中抽取主题关键词、主题标识和文档覆盖情况。
-- **可观测服务入口**：提供健康检查与就绪检查，可接入 Kubernetes、服务网格和发布流水线。
-- **模型可替换架构**：当前内置可运行的基线推理逻辑，后续可替换为 Transformer、Sentence-BERT、BERTopic 或企业自研模型。
+## Capabilities
 
-## 系统架构
+- **Unified semantic analysis**: language detection, sentiment, weighted keywords, text statistics, and entity outputs.
+- **Batch processing**: process text collections from ticket streams, offline datasets, or data warehouses.
+- **Topic discovery**: extract topic identifiers, keywords, and document coverage from text collections.
+- **Operational endpoints**: health and readiness checks for Kubernetes, service meshes, and release pipelines.
+- **Model replacement**: replace the baseline inference layer with Transformers, Sentence-BERT, BERTopic, or proprietary models.
+
+## Architecture
 
 ```text
-数据源 / 业务系统
-        │
-        ▼
-API Gateway / 鉴权 / 限流
-        │
-        ▼
-语义理解服务 ─── 模型注册与版本管理
-        │                    │
-        ├── 单文本分析       ├── 向量模型
-        ├── 批量分析          ├── 分类/情感模型
-        └── 主题发现         └── 聚类/主题模型
-        │
-        ▼
-结构化结果 / 指标服务 / 搜索与知识应用
+Data Sources / Business Systems
+              │
+              ▼
+API Gateway / Auth / Rate Limiting
+              │
+              ▼
+Semantic Understanding Service ─── Model Registry & Versioning
+              │                              │
+              ├── Single-text analysis      ├── Embedding models
+              ├── Batch analysis            ├── Classification models
+              └── Topic discovery           └── Clustering / topic models
+              │
+              ▼
+Structured Results / Metrics / Search / Knowledge Applications
 ```
 
-## API 目录
+## API Overview
 
-| 能力 | 方法 | 路径 | 说明 |
+| Capability | Method | Endpoint | Description |
 | --- | --- | --- | --- |
-| 健康检查 | GET | `/health` | 存活状态与时间戳 |
-| 就绪检查 | GET | `/ready` | 模型注册与依赖状态 |
-| 单文本分析 | POST | `/api/v1/semantic/analyze` | 单条文本语义结构化 |
-| 批量分析 | POST | `/api/v1/semantic/batch` | 批量文本处理 |
-| 主题发现 | POST | `/api/v1/discovery/topics` | 文本集合主题抽取 |
-| OpenAPI | GET | `/api/docs` | 接口契约与调试入口 |
+| Health | GET | `/health` | Liveness status and timestamp |
+| Readiness | GET | `/ready` | Model registry and dependency status |
+| Single analysis | POST | `/api/v1/semantic/analyze` | Structured analysis for one text |
+| Batch analysis | POST | `/api/v1/semantic/batch` | Batch text processing |
+| Topic discovery | POST | `/api/v1/discovery/topics` | Topic extraction from a collection |
+| OpenAPI | GET | `/api/docs` | API contract and documentation |
 
-## 快速部署
+## Deployment
 
 ```bash
 python -m venv .venv
@@ -52,53 +57,54 @@ pip install -r requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-容器部署：
+Container deployment:
 
 ```bash
 docker build -t open-text-semantics:latest .
 docker run --rm -p 8000:8000 open-text-semantics:latest
 ```
 
-## 企业级演进路线
+## Enterprise Roadmap
 
-### 计算与模型层
+### Model and Compute
 
-- 接入模型注册中心，实现模型版本、灰度发布和回滚。
-- 使用 GPU 推理、动态批处理和异步任务队列提升吞吐。
-- 引入领域词表、提示模板、检索增强和少样本标注闭环。
+- Model registry with versioning, canary release, rollback, and evaluation gates.
+- GPU inference, dynamic batching, and asynchronous task queues for throughput.
+- Domain lexicons, prompt templates, retrieval augmentation, and human-in-the-loop labeling.
 
-### 数据与平台层
+### Data and Platform
 
-- 使用 PostgreSQL 保存任务元数据，使用对象存储保存原始文本与结果快照。
-- 使用 Elasticsearch/OpenSearch 建立全文检索和语义检索索引。
-- 使用 Milvus、pgvector 或其他向量数据库支持相似文本召回。
+- PostgreSQL for task metadata and object storage for raw text and result snapshots.
+- Elasticsearch/OpenSearch for full-text and semantic retrieval.
+- Milvus, pgvector, or another vector database for similarity search.
 
-### 工程与治理层
+### Engineering and Governance
 
-- 增加 OAuth2/JWT、租户隔离、RBAC、接口签名和敏感数据脱敏。
-- 增加 Prometheus 指标、OpenTelemetry 链路追踪和集中式日志。
-- 建立离线评测集、在线质量监控、人工审核和模型漂移告警机制。
-- 通过 CI/CD、容器镜像扫描、依赖审计和基础设施即代码支持生产发布。
+- OAuth2/JWT, tenant isolation, RBAC, request signing, and sensitive-data masking.
+- Prometheus metrics, OpenTelemetry traces, and centralized logging.
+- Offline evaluation sets, online quality monitoring, human review, and drift alerts.
+- CI/CD, image scanning, dependency auditing, and infrastructure as code.
 
-## 目录结构
+## Project Layout
 
 ```text
 .
 ├── app/
-│   └── main.py              # API 入口与基线语义服务
-├── Dockerfile               # 容器化部署定义
-├── requirements.txt         # Python 运行依赖
+│   └── main.py              # API entrypoint and baseline service
+├── Dockerfile               # Container image definition
+├── requirements.txt         # Runtime dependencies
 ├── .gitignore
-└── README.md
+├── README.md                # English documentation
+└── README.zh-CN.md          # Simplified Chinese documentation
 ```
 
-## 设计原则
+## Design Principles
 
-1. **契约优先**：通过版本化 API 稳定连接上游业务和下游数据产品。
-2. **模型解耦**：业务接口不绑定单一模型，支持模型替换与多版本共存。
-3. **结果可解释**：输出关键词权重、主题覆盖和统计信息，便于审计与业务复核。
-4. **渐进式生产化**：从可运行基线开始，逐步增加真实模型、数据治理和平台能力。
+1. **Contract first**: versioned APIs connect upstream systems and downstream products.
+2. **Model decoupling**: business APIs do not depend on one specific model implementation.
+3. **Explainable outputs**: keyword weights, topic coverage, and statistics support review and audit.
+4. **Progressive productionization**: start from a runnable baseline and evolve toward enterprise deployment.
 
-## 许可证
+## License
 
-项目许可证可根据组织内部合规要求补充。生产使用前请完成数据安全、隐私保护和模型效果评估。
+Add an organization-approved license before production distribution. Complete security, privacy, and model-quality reviews before processing sensitive data.

@@ -1,0 +1,110 @@
+<p align="center">
+  <a href="README.md">English</a> ·
+  <a href="README.zh-CN.md"><strong>简体中文</strong></a>
+</p>
+
+# 开放文本语义理解与分析平台
+
+面向企业级文本资产的语义理解、需求洞察与主题发现平台原型。系统提供版本化 API 层，适用于客服工单、用户反馈、舆情信息、产品需求、知识库文档和运营内容等开放文本场景。
+
+本仓库提供后端服务原型，不包含轻量网页演示。服务通过 OpenAPI、内部服务调用或数据管道接入。
+
+## 核心能力
+
+- **统一语义分析**：语言识别、情感倾向、关键词权重、文本统计和实体结果统一输出。
+- **批量文本处理**：支持工单流、离线数据集和数据仓库中的文本集合处理。
+- **需求主题发现**：从文本集合中抽取主题标识、关键词和文档覆盖情况。
+- **服务运行状态**：提供健康检查与就绪检查，可接入 Kubernetes、服务网格和发布流水线。
+- **模型可替换**：可将基线推理层替换为 Transformers、Sentence-BERT、BERTopic 或企业自研模型。
+
+## 系统架构
+
+```text
+数据源 / 业务系统
+        │
+        ▼
+API Gateway / 鉴权 / 限流
+        │
+        ▼
+语义理解服务 ─── 模型注册与版本管理
+        │                    │
+        ├── 单文本分析       ├── 向量模型
+        ├── 批量分析          ├── 分类模型
+        └── 主题发现         └── 聚类 / 主题模型
+        │
+        ▼
+结构化结果 / 指标服务 / 搜索与知识应用
+```
+
+## API 目录
+
+| 能力 | 方法 | 路径 | 说明 |
+| --- | --- | --- | --- |
+| 健康检查 | GET | `/health` | 存活状态与时间戳 |
+| 就绪检查 | GET | `/ready` | 模型注册与依赖状态 |
+| 单文本分析 | POST | `/api/v1/semantic/analyze` | 单条文本语义结构化 |
+| 批量分析 | POST | `/api/v1/semantic/batch` | 批量文本处理 |
+| 主题发现 | POST | `/api/v1/discovery/topics` | 文本集合主题抽取 |
+| OpenAPI | GET | `/api/docs` | 接口契约与文档 |
+
+## 部署
+
+```bash
+python -m venv .venv
+# Windows: .venv\\Scripts\\activate
+# macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+容器部署：
+
+```bash
+docker build -t open-text-semantics:latest .
+docker run --rm -p 8000:8000 open-text-semantics:latest
+```
+
+## 企业级演进路线
+
+### 模型与计算层
+
+- 建立模型注册中心，实现版本管理、灰度发布、回滚和评测门禁。
+- 使用 GPU 推理、动态批处理和异步任务队列提升吞吐。
+- 引入领域词表、提示模板、检索增强和人工标注闭环。
+
+### 数据与平台层
+
+- 使用 PostgreSQL 保存任务元数据，使用对象存储保存原始文本与结果快照。
+- 使用 Elasticsearch/OpenSearch 建立全文检索和语义检索索引。
+- 使用 Milvus、pgvector 或其他向量数据库支持相似文本召回。
+
+### 工程与治理层
+
+- 增加 OAuth2/JWT、租户隔离、RBAC、请求签名和敏感数据脱敏。
+- 增加 Prometheus 指标、OpenTelemetry 链路追踪和集中式日志。
+- 建立离线评测集、在线质量监控、人工审核和模型漂移告警机制。
+- 通过 CI/CD、镜像扫描、依赖审计和基础设施即代码支持生产发布。
+
+## 目录结构
+
+```text
+.
+├── app/
+│   └── main.py              # API 入口与基线语义服务
+├── Dockerfile               # 容器化部署定义
+├── requirements.txt         # Python 运行依赖
+├── .gitignore
+├── README.md                # 英文文档
+└── README.zh-CN.md          # 简体中文文档
+```
+
+## 设计原则
+
+1. **契约优先**：通过版本化 API 稳定连接上游业务和下游数据产品。
+2. **模型解耦**：业务接口不绑定单一模型，支持模型替换与多版本共存。
+3. **结果可解释**：输出关键词权重、主题覆盖和统计信息，便于审计与业务复核。
+4. **渐进式生产化**：从可运行基线开始，逐步演进到企业级部署。
+
+## 许可证
+
+正式对外发布前请补充组织认可的许可证。处理敏感数据前，请完成安全、隐私与模型质量评估。
