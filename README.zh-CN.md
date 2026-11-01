@@ -150,4 +150,4 @@ docker run --rm -p 8000:8000 open-text-semantics:latest
 
 ## 许可证
 
-本项目采用 [MIT 许可证](LICENSE) 开源。处理真实用户数据前，应完成隐私保护、数据安全和模型效果评估。
+本项目采用 [MIT 许可证](LICENSE) 开源。
