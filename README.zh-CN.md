@@ -1,9 +1,9 @@
+# 开放文本语义理解与分析平台
+
 <p align="center">
   <a href="README.md">English</a> ·
   <a href="README.zh-CN.md"><strong>简体中文</strong></a>
 </p>
-
-# 开放文本语义理解与分析平台
 
 面向企业级文本资产的语义理解、需求洞察与主题发现平台原型。系统提供版本化 API 层，适用于客服工单、用户反馈、舆情信息、产品需求、知识库文档和运营内容等开放文本场景。
 
@@ -64,7 +64,7 @@ docker build -t open-text-semantics:latest .
 docker run --rm -p 8000:8000 open-text-semantics:latest
 ```
 
-## 企业级演进路线
+## 路线图
 
 ### 模型与计算层
 

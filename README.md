@@ -1,9 +1,9 @@
+# Open Text Semantic Understanding & Analysis Platform
+
 <p align="center">
   <a href="README.md"><strong>English</strong></a> ·
   <a href="README.zh-CN.md">简体中文</a>
 </p>
-
-# Open Text Semantic Understanding & Analysis Platform
 
 An enterprise-oriented platform prototype for semantic understanding, demand intelligence, and topic discovery over open-domain text. It provides a versioned API layer for customer tickets, user feedback, public opinion, product requirements, knowledge documents, and operational content.
 
@@ -64,7 +64,7 @@ docker build -t open-text-semantics:latest .
 docker run --rm -p 8000:8000 open-text-semantics:latest
 ```
 
-## Enterprise Roadmap
+## Roadmap
 
 ### Model and Compute
 
